@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Calendar } from "lucide-react";
+import loadAttendance from "@/utils/xlsxAttendanceConverter";
 
 export function GroupPage() {
   const { groupName } = useParams();
@@ -26,8 +27,7 @@ export function GroupPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/attendance.json")
-      .then((res) => res.json())
+    loadAttendance()
       .then((jsonData) => {
         setData(jsonData);
         setLoading(false);
