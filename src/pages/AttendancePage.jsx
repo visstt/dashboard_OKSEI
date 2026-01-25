@@ -20,7 +20,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@components/ui/card";
 import {
   Table,
   TableBody,
@@ -28,11 +28,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+} from "@components/ui/table";
+import { Badge } from "@components/ui/badge";
+import { Separator } from "@components/ui/separator";
 import { Users, Calendar, AlertTriangle } from "lucide-react";
-import loadAttendance from "@/utils/xlsxAttendanceConverter";
+import loadAttendance from "@lib/xlsxAttendanceConverter";
 
 const COLORS = [
   "#000000",
