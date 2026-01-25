@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "@/components/Sidebar";
 import { AttendancePage } from "@/pages/AttendancePage";
 import { GroupPage } from "@/pages/GroupPage";
-import "./App.css";
 
 function App() {
   return (
