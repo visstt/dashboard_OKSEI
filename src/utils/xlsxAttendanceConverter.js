@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 
 export default async function loadAttendance() {
    try {
-      const response = await fetch("/Attendance.xlsx");
+      const response = await fetch("/attendance.xlsx");
       const arrayBuffer = await response.arrayBuffer();
       const workbook = XLSX.read(arrayBuffer, { type: "array" });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
