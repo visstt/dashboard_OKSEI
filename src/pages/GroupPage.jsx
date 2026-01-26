@@ -19,6 +19,7 @@ import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
 import { ArrowLeft, Users, Calendar } from "lucide-react";
 import loadAttendance from "@lib/xlsxAttendanceConverter";
+import loadAttendance from "@/lib/xlsxAttendanceConverter";
 
 export function GroupPage() {
   const { groupName } = useParams();

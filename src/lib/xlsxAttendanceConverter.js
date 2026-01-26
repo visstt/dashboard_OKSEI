@@ -114,4 +114,3 @@ export default async function loadAttendance() {
     console.error("Ошибка загрузки:", error);
     return [];
   }
-}

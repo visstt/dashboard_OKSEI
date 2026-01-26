@@ -120,7 +120,7 @@ export function AttendancePage() {
             ? department.substring(0, 30) + "..."
             : department,
         missed,
-      })
+      }),
     );
 
     return {
