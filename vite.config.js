@@ -8,6 +8,7 @@ export default defineConfig({
       "@": "/src",
       "@lib": "/src/lib",
       "@components": "/src/components",
+      "@ui": "/src/components/ui",
       "@pages": "/src/pages",
     },
   },
