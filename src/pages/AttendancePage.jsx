@@ -20,7 +20,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@ui/card";
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -28,11 +28,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@ui/table";
-import { Badge } from "@ui/badge";
-import { Separator } from "@ui/separator";
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Users, Calendar, AlertTriangle } from "lucide-react";
-import loadAttendance from "@lib/xlsxAttendanceConverter";
+import loadAttendance from "@/lib/xlsxAttendanceConverter";
 
 const COLORS = [
   "#000000",
@@ -120,7 +120,7 @@ export function AttendancePage() {
             ? department.substring(0, 30) + "..."
             : department,
         missed,
-      }),
+      })
     );
 
     return {

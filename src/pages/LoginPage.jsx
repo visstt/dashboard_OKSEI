@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
 export function LoginPage() {
@@ -47,16 +46,7 @@ export function LoginPage() {
       <Card className="w-full max-w-md shadow-xl border-gray-300 flex flex-col gap-3">
         <CardHeader className="space-y-1">
           <div className="flex flex-col items-center space-y-4">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="h-16 w-16"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src =
-                  "https://via.placeholder.com/64/000000/FFFFFF?text=Logo";
-              }}
-            />
+            <img src="/logo.png" alt="Logo" className="h-16 w-16" />
             <div className="text-center">
               <CardTitle className="text-2xl font-bold text-black">
                 Вход в систему
