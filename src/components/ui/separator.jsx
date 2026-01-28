@@ -1,12 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const Separator = (
-  { className, orientation = "horizontal", decorative = true, ...props },
-  ref
-) => (
+const Separator = ({
+  className,
+  orientation = "horizontal",
+  decorative = true,
+  ...props
+}) => (
   <div
-    ref={ref}
     role={decorative ? "none" : "separator"}
     aria-orientation={orientation}
     className={cn(

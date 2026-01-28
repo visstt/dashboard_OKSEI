@@ -26,11 +26,10 @@ const buttonVariants = cva(
   }
 );
 
-export const Button = ({ className, variant, size, ...props }, ref) => {
+export const Button = ({ className, variant, size, ...props }) => {
   return (
     <button
       className={cn(buttonVariants({ variant, size, className }))}
-      ref={ref}
       {...props}
     />
   );
