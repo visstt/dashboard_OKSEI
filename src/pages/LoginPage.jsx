@@ -113,7 +113,7 @@ export function LoginPage() {
                   checked={formData.rememberMe}
                   onChange={handleChange}
                   style={{ borderColor: "darkgray" }}
-                  className="h-4 w-4 ml-1 rounded appearance-none cursor-pointer checked:border-0 checked:bg-black checked:border-black checked:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjMzMzMgNC41TDYuMjUgMTEuNTgzM0wzLjY2NjY3IDkiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] checked:bg-center checked:bg-no-repeat bg-white transition-all duration-200 border"
+                  className="h-4 w-4 ml-1 rounded appearance-none cursor-pointer checked:border-0 checked:bg-black checked:border-black checked:bg-[url('/check.svg')] checked:bg-center checked:bg-no-repeat bg-white transition-all duration-200 border"
                 />
                 <Label htmlFor="rememberMe" className="text-sm text-gray-600">
                   Запомнить меня
