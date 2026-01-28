@@ -27,7 +27,7 @@ export function Sidebar() {
             <img
               src="/logo.png"
               alt="ГАПОУ ОКЭИ"
-              className="h-8 w-8 flex-shrink-0"
+              className="h-8 w-8 shrink-0"
             />
             <h1 className="text-xl font-semibold text-black">ГАПОУ ОКЭИ</h1>
           </div>
@@ -65,7 +65,7 @@ export function Sidebar() {
               )}
               title={isCollapsed ? item.name : undefined}
             >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
+              <item.icon className="h-5 w-5 shrink-0" />
               {!isCollapsed && item.name}
             </Link>
           );

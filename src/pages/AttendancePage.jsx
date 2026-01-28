@@ -32,7 +32,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, Calendar, AlertTriangle } from "lucide-react";
-import loadAttendance from "@/utils/xlsxAttendanceConverter";
+import loadAttendance from "@/lib/xlsxAttendanceConverter";
 
 const COLORS = [
   "#000000",
@@ -403,15 +403,15 @@ export function AttendancePage() {
                           student.totalMissed > 20
                             ? "default"
                             : student.totalMissed > 10
-                            ? "secondary"
-                            : "outline"
+                              ? "secondary"
+                              : "outline"
                         }
                         className={
                           student.totalMissed > 20
                             ? "bg-black"
                             : student.totalMissed > 10
-                            ? "bg-gray-700 text-white"
-                            : ""
+                              ? "bg-gray-700 text-white"
+                              : ""
                         }
                       >
                         {student.totalMissed} ч.
@@ -477,15 +477,15 @@ export function AttendancePage() {
                               student.totalMissed > 20
                                 ? "default"
                                 : student.totalMissed > 10
-                                ? "secondary"
-                                : "outline"
+                                  ? "secondary"
+                                  : "outline"
                             }
                             className={
                               student.totalMissed > 20
                                 ? "bg-black"
                                 : student.totalMissed > 10
-                                ? "bg-gray-700 text-white"
-                                : ""
+                                  ? "bg-gray-700 text-white"
+                                  : ""
                             }
                           >
                             {student.totalMissed} ч.

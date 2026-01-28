@@ -11,7 +11,7 @@ const badgeVariants = {
   outline: "text-slate-950",
 };
 
-function Badge({ className, variant = "default", ...props }) {
+export function Badge({ className, variant = "default", ...props }) {
   return (
     <div
       className={cn(
@@ -23,5 +23,3 @@ function Badge({ className, variant = "default", ...props }) {
     />
   );
 }
-
-export { Badge, badgeVariants };
