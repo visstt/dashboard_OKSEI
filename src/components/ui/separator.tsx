@@ -1,12 +1,17 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const Separator = ({
+interface SeparatorProps extends HTMLAttributes<HTMLDivElement> {
+  orientation?: "horizontal" | "vertical";
+  decorative?: boolean;
+}
+
+export const Separator = ({
   className,
   orientation = "horizontal",
   decorative = true,
   ...props
-}) => (
+}: SeparatorProps) => (
   <div
     role={decorative ? "none" : "separator"}
     aria-orientation={orientation}
@@ -18,7 +23,3 @@ const Separator = ({
     {...props}
   />
 );
-
-Separator.displayName = "Separator";
-
-export { Separator };

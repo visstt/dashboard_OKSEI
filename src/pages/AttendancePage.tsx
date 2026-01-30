@@ -7,7 +7,6 @@ import {
   Line,
   PieChart,
   Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -33,6 +32,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, Calendar, AlertTriangle } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
+import type {
+  AttendanceRecord,
+  Department,
+  FlatStudent,
+} from "@/types/attendance";
 
 const COLORS = [
   "#BEBEBE",
@@ -45,7 +49,7 @@ const COLORS = [
 
 export function AttendancePage() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,10 +67,10 @@ export function AttendancePage() {
   const stats = useMemo(() => {
     if (!data.length) return null;
 
-    const allStudents = [];
-    const missedByDate = {};
-    const missedByGroup = {};
-    const missedByDepartment = {};
+    const allStudents: FlatStudent[] = [];
+    const missedByDate: Record<string, number> = {};
+    const missedByGroup: Record<string, number> = {};
+    const missedByDepartment: Record<string, number> = {};
 
     data.forEach((dept) => {
       missedByDepartment[dept.department] = 0;
@@ -74,7 +78,10 @@ export function AttendancePage() {
         missedByGroup[group.group] = 0;
         group.students?.forEach((student) => {
           const totalMissed =
-            student.attendance?.reduce((sum, att) => sum + att.missed, 0) || 0;
+            student.attendance?.reduce(
+              (sum: number, att: AttendanceRecord) => sum + att.missed,
+              0
+            ) || 0;
           allStudents.push({
             name: student.student,
             group: group.group,
@@ -99,7 +106,7 @@ export function AttendancePage() {
       .slice(0, 10);
 
     const dateData = Object.entries(missedByDate)
-      .sort(([a], [b]) => new Date(a) - new Date(b))
+      .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
       .map(([date, missed]) => ({
         date: new Date(date).toLocaleDateString("ru-RU", {
           day: "2-digit",
@@ -280,7 +287,10 @@ export function AttendancePage() {
                     fill="#D26A69"
                     radius={[8, 8, 0, 0]}
                     name="Пропущено часов"
-                    onClick={(data) => navigate(`/group/${data.group}`)}
+                    onClick={(_, index) => {
+                      const group = stats.groupData[index]?.group;
+                      if (group) navigate(`/group/${group}`);
+                    }}
                     cursor="pointer"
                   />
                 </BarChart>
@@ -307,7 +317,9 @@ export function AttendancePage() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                      label={({ percent = 0 }) =>
+                        `${(percent * 100).toFixed(0)}%`
+                      }
                       outerRadius={100}
                       dataKey="missed"
                     />

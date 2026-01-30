@@ -1,7 +1,9 @@
-import * as React from "react";
+import type { InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const Input = ({ className, type, ...props }) => {
+type InputProps = InputHTMLAttributes<HTMLInputElement>;
+
+export const Input = ({ className, type, ...props }: InputProps) => {
   return (
     <input
       type={type}
@@ -12,12 +14,9 @@ const Input = ({ className, type, ...props }) => {
         "focus:outline-none focus:border-black focus:shadow-[0_0_0_2px_rgba(0,0,0,0.8)]",
         "transition-all duration-200",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        className,
+        className
       )}
       {...props}
     />
   );
 };
-Input.displayName = "Input";
-
-export { Input };

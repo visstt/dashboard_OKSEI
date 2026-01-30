@@ -19,11 +19,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Calendar } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
+import type { AttendanceRecord, Department } from "@/types/attendance";
 
 export function GroupPage() {
   const { groupName } = useParams();
   const navigate = useNavigate();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +61,10 @@ export function GroupPage() {
     const students = groupInfo.students
       ?.map((student) => {
         const totalMissed =
-          student.attendance?.reduce((sum, att) => sum + att.missed, 0) || 0;
+          student.attendance?.reduce(
+            (sum: number, att: AttendanceRecord) => sum + att.missed,
+            0
+          ) || 0;
         return {
           name: student.student,
           totalMissed,
@@ -95,7 +99,11 @@ export function GroupPage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center space-y-4">
           <p className="text-lg text-black">Группа не найдена</p>
-          <Button onClick={() => navigate("/")}>
+          <Button
+            onClick={() => navigate("/")}
+            variant="default"
+            size="default"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Вернуться назад
           </Button>
@@ -110,6 +118,7 @@ export function GroupPage() {
       <div className="space-y-4">
         <Button
           variant="outline"
+          size="default"
           onClick={() => navigate("/")}
           className="mb-4"
         >

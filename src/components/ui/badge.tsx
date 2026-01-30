@@ -1,4 +1,4 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = {
@@ -11,7 +11,17 @@ const badgeVariants = {
   outline: "text-slate-950",
 };
 
-export function Badge({ className, variant = "default", ...props }) {
+type BadgeVariant = keyof typeof badgeVariants;
+
+interface BadgeProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: BadgeVariant;
+}
+
+export const Badge = ({
+  className,
+  variant = "default",
+  ...props
+}: BadgeProps) => {
   return (
     <div
       className={cn(
@@ -22,4 +32,4 @@ export function Badge({ className, variant = "default", ...props }) {
       {...props}
     />
   );
-}
+};

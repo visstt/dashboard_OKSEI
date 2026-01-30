@@ -1,17 +1,40 @@
 import * as XLSX from "xlsx";
 
+interface Attendance {
+  date: string;
+  missed: number;
+}
+
+interface Student {
+  student: string;
+  attendance: Attendance[];
+}
+
+interface Group {
+  group: string;
+  students: Student[];
+}
+
+interface Department {
+  department: string;
+  groups: Group[];
+}
+
 export default async function loadAttendance() {
   try {
     const response = await fetch("/attendance.xlsx");
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: "array" });
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]!];
 
-    const rawData = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1,
-      defval: "",
-      raw: false,
-    });
+    const rawData = XLSX.utils.sheet_to_json<(string | number | null)[]>(
+      worksheet!,
+      {
+        header: 1,
+        defval: "",
+        raw: false,
+      }
+    );
 
     let currentDepartment = "";
     let currentGroup = "";
@@ -45,7 +68,7 @@ export default async function loadAttendance() {
 
           const dateMatch = cellStr.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})/);
           if (dateMatch) {
-            const [_, day, month, year] = dateMatch;
+            const [, day, month, year] = dateMatch;
             parsedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
           }
 
@@ -62,14 +85,14 @@ export default async function loadAttendance() {
               group: currentGroup,
               student: currentStudent,
               date: parsedDate,
-              missed: parseInt(hours) || 0,
+              missed: parseInt(String(hours)) || 0,
             });
           }
         }
       }
     }
 
-    const departments = {};
+    const departments: Record<string, Department> = {};
 
     for (const r of records) {
       const dep = r.department;

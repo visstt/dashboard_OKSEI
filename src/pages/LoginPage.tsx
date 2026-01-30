@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +25,7 @@ export function LoginPage() {
     rememberMe: false,
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -37,7 +37,7 @@ export function LoginPage() {
     }, 1000);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -50,7 +50,7 @@ export function LoginPage() {
       <Card className="w-full max-w-md shadow-xl border-gray-300 flex flex-col gap-3">
         <CardHeader className="space-y-1">
           <div className="flex flex-col items-center space-y-4">
-            <img src="/logo.png" alt="Logo" className="h-16 w-16" />
+            <img src="/images/logo.png" alt="Logo" className="h-16 w-16" />
             <div className="text-center">
               <CardTitle className="text-2xl font-bold text-black">
                 Вход в систему
@@ -117,7 +117,7 @@ export function LoginPage() {
                   checked={formData.rememberMe}
                   onChange={handleChange}
                   style={{ borderColor: "darkgray" }}
-                  className="h-4 w-4 ml-1 rounded appearance-none cursor-pointer checked:border-0 checked:bg-black checked:border-black checked:bg-[url('/check.svg')] checked:bg-center checked:bg-no-repeat bg-white transition-all duration-200 border"
+                  className="h-4 w-4 ml-1 rounded appearance-none cursor-pointer checked:border-0 checked:bg-black checked:border-black checked:bg-[url('/images/check.svg')] checked:bg-center checked:bg-no-repeat bg-white transition-all duration-200 border"
                 />
                 <Label htmlFor="rememberMe" className="text-sm text-gray-600">
                   Запомнить меня
