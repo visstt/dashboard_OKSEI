@@ -51,7 +51,6 @@ export function AttendancePage() {
   useEffect(() => {
     loadAttendance()
       .then((jsonData) => {
-        console.log(jsonData);
         setData(jsonData);
         setLoading(false);
       })
