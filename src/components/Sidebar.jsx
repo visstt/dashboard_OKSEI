@@ -5,7 +5,6 @@ import {
   ClipboardList,
   ChevronLeft,
   ChevronRight,
-  Group,
   LogOut,
   GroupIcon,
 } from "lucide-react";

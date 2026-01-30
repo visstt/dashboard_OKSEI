@@ -82,12 +82,6 @@ export function GroupPage() {
     };
   }, [data, groupName]);
 
-  const getBadgeVariant = (hours) => {
-    if (hours > 20) return "default";
-    if (hours > 10) return "secondary";
-    return "outline";
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -196,12 +190,12 @@ export function GroupPage() {
                       <Badge
                         className={
                           student.totalMissed > 20
-                            ? "bg-red-600"
+                            ? "bg-red-600 text-white"
                             : student.totalMissed > 10
                               ? "bg-orange-600 text-white"
                               : "bg-green-500 text-white"
                         }
-                        variant={getBadgeVariant(student.totalMissed)}
+                        variant="outline"
                       >
                         {student.totalMissed} ч
                       </Badge>

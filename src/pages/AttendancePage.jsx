@@ -300,22 +300,17 @@ export function AttendancePage() {
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={stats.deptData}
+                      data={stats.deptData.map((item, index) => ({
+                        ...item,
+                        fill: COLORS[index % COLORS.length],
+                      }))}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ percent }) => (percent * 100).toFixed(0) + "%"}
+                      label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                       outerRadius={100}
-                      fill="#8884d8"
                       dataKey="missed"
-                    >
-                      {stats.deptData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
+                    />
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
@@ -394,19 +389,13 @@ export function AttendancePage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <Badge
-                        variant={
-                          student.totalMissed > 20
-                            ? "default"
-                            : student.totalMissed > 10
-                              ? "secondary"
-                              : "outline"
-                        }
+                        variant="outline"
                         className={
                           student.totalMissed > 20
-                            ? "bg-red-600"
+                            ? "bg-red-600 text-white"
                             : student.totalMissed > 10
-                              ? "bg-orange-600"
-                              : "bg-green-500"
+                              ? "bg-orange-600 text-white"
+                              : "bg-green-500 text-white"
                         }
                       >
                         {student.totalMissed} ч.
