@@ -1,13 +1,29 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { ClipboardList, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ClipboardList,
+  ChevronLeft,
+  ChevronRight,
+  Group,
+  LogOut,
+  GroupIcon,
+} from "lucide-react";
 
 export function Sidebar() {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const navigation = [{ name: "Посещаемость", href: "/", icon: ClipboardList }];
+  const navigation = [
+    { name: "Посещаемость", href: "/", icon: ClipboardList, condition: true },
+    {
+      name: `Группа ${decodeURIComponent(location.pathname.replace("/group/", ""))}`,
+      href: location.pathname,
+      icon: GroupIcon,
+      condition: location.pathname.includes("/group/"),
+    },
+    { name: "Выйти", href: "/logout", icon: LogOut, condition: true },
+  ];
 
   return (
     <div
@@ -52,22 +68,25 @@ export function Sidebar() {
         )}
         {navigation.map((item) => {
           const isActive = location.pathname === item.href;
+
           return (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-black text-white"
-                  : "text-gray-700 hover:bg-gray-100",
-                isCollapsed && "justify-center"
-              )}
-              title={isCollapsed ? item.name : undefined}
-            >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {!isCollapsed && item.name}
-            </Link>
+            item.condition && (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-black text-white"
+                    : "text-gray-700 hover:bg-gray-100",
+                  isCollapsed && "justify-center"
+                )}
+                title={isCollapsed ? item.name : undefined}
+              >
+                <item.icon className="h-5 w-5 shrink-0" />
+                {!isCollapsed && item.name}
+              </Link>
+            )
           );
         })}
       </nav>
