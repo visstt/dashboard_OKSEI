@@ -40,7 +40,7 @@ export function Sidebar() {
         {!isCollapsed && (
           <div className="flex items-center gap-3">
             <img
-              src="/logo.png"
+              src="/images/logo.png"
               alt="ГАПОУ ОКЭИ"
               className="h-8 w-8 shrink-0"
             />
@@ -62,7 +62,7 @@ export function Sidebar() {
       <nav className="flex-1 space-y-1 px-3 py-4">
         {isCollapsed && (
           <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="ГАПОУ ОКЭИ" className="h-8 w-8" />
+            <img src="/images/logo.png" alt="ГАПОУ ОКЭИ" className="h-8 w-8" />
           </div>
         )}
         {navigation.map((item) => {

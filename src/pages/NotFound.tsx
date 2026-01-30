@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { FileQuestion } from "lucide-react";
 
-export function NotFound({ isAuth }) {
+export function NotFound({ isAuth }: { isAuth: boolean }) {
   const navigate = useNavigate();
 
   return (
