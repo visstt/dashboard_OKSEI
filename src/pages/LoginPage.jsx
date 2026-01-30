@@ -11,10 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import { useAuthStore } from "@/store/auth.store";
+import { useNavigate } from "react-router-dom";
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -130,6 +134,11 @@ export function LoginPage() {
 
           <CardFooter className="flex flex-col space-y-4">
             <Button
+              onClick={() => {
+                // Симуляция входа
+                login();
+                navigate("/");
+              }}
               type="submit"
               className="w-full bg-black hover:bg-gray-800 text-white"
               disabled={isLoading}
