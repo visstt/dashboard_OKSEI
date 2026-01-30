@@ -32,6 +32,7 @@ bun.lockb
 
 # Private files
 public/attendance.xlsx
+converter/Посещаемость.xlsx
 
 # Go binaries
 converter/converter
