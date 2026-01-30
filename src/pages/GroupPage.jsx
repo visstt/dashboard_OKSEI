@@ -193,7 +193,16 @@ export function GroupPage() {
                     </TableCell>
                     <TableCell className="text-black">{student.name}</TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={getBadgeVariant(student.totalMissed)}>
+                      <Badge
+                        className={
+                          student.totalMissed > 20
+                            ? "bg-red-600"
+                            : student.totalMissed > 10
+                              ? "bg-orange-600 text-white"
+                              : "bg-green-500 text-white"
+                        }
+                        variant={getBadgeVariant(student.totalMissed)}
+                      >
                         {student.totalMissed} ч
                       </Badge>
                     </TableCell>

@@ -35,10 +35,10 @@ import { Users, Calendar, AlertTriangle } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
 
 const COLORS = [
-  "#000000",
-  "#1a1a1a",
-  "#333333",
-  "#4d4d4d",
+  "#BEBEBE",
+  "#EA5596",
+  "#4FB4E5",
+  "#EC6E2C",
   "#666666",
   "#808080",
 ];
@@ -196,7 +196,7 @@ export function AttendancePage() {
               <CardTitle className="text-sm font-medium text-black">
                 Критические случаи
               </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-black" />
+              <AlertTriangle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-black">
@@ -244,9 +244,9 @@ export function AttendancePage() {
                   <Line
                     type="monotone"
                     dataKey="missed"
-                    stroke="#000000"
+                    stroke="#D26A69"
                     strokeWidth={2}
-                    dot={{ fill: "#000000", r: 4 }}
+                    dot={{ fill: "#D26A69", r: 4 }}
                     activeDot={{ r: 6 }}
                     name="Пропущено часов"
                   />
@@ -277,7 +277,7 @@ export function AttendancePage() {
                   />
                   <Bar
                     dataKey="missed"
-                    fill="#000000"
+                    fill="#D26A69"
                     radius={[8, 8, 0, 0]}
                     name="Пропущено часов"
                     onClick={(data) => navigate(`/group/${data.group}`)}
@@ -304,12 +304,7 @@ export function AttendancePage() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ department, percent }) =>
-                        `${
-                          department.split(" ")[1] ||
-                          department.substring(0, 15)
-                        } (${(percent * 100).toFixed(0)}%)`
-                      }
+                      label={({ percent }) => (percent * 100).toFixed(0) + "%"}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="missed"
@@ -408,10 +403,10 @@ export function AttendancePage() {
                         }
                         className={
                           student.totalMissed > 20
-                            ? "bg-black"
+                            ? "bg-red-600"
                             : student.totalMissed > 10
-                              ? "bg-gray-700 text-white"
-                              : ""
+                              ? "bg-orange-600"
+                              : "bg-green-500"
                         }
                       >
                         {student.totalMissed} ч.
@@ -464,7 +459,7 @@ export function AttendancePage() {
                           {student.name}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">{student.group}</Badge>
+                          <Badge variant="secondary">{student.group}</Badge>
                         </TableCell>
                         <TableCell className="text-sm text-gray-700">
                           {student.department.length > 40
@@ -473,19 +468,13 @@ export function AttendancePage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge
-                            variant={
-                              student.totalMissed > 20
-                                ? "default"
-                                : student.totalMissed > 10
-                                  ? "secondary"
-                                  : "outline"
-                            }
+                            variant="outline"
                             className={
                               student.totalMissed > 20
-                                ? "bg-black"
+                                ? "bg-red-600 text-white"
                                 : student.totalMissed > 10
-                                  ? "bg-gray-700 text-white"
-                                  : ""
+                                  ? "bg-orange-600 text-white"
+                                  : "bg-green-500 text-white"
                             }
                           >
                             {student.totalMissed} ч.
