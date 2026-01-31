@@ -6,7 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  GroupIcon,
+  HistoryIcon,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -14,13 +14,20 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navigation = [
-    { name: "Посещаемость", href: "/", icon: ClipboardList, condition: true },
     {
-      name: `Группа ${decodeURIComponent(location.pathname.replace("/group/", ""))}`,
-      href: location.pathname,
-      icon: GroupIcon,
+      name: "Посещаемость",
+      href: "/",
+      icon: ClipboardList,
+      condition: !location.pathname.includes("/group/"),
+    },
+    {
+      name: `Посещаемость (${decodeURIComponent(location.pathname.replace("/group/", ""))})`,
+      href: "/",
+      location: location.pathname,
+      icon: ClipboardList,
       condition: location.pathname.includes("/group/"),
     },
+    { name: "История", href: "/history", icon: HistoryIcon, condition: true },
     { name: "Выйти", href: "/logout", icon: LogOut, condition: true },
   ];
 
@@ -64,20 +71,22 @@ export function Sidebar() {
           <div className="flex justify-center mb-4">
             <img src="/images/logo.png" alt="ГАПОУ ОКЭИ" className="h-8 w-8" />
           </div>
-        )}
-        {navigation.map((item) => {
-          const isActive = location.pathname === item.href;
+        )}{" "}
+        {navigation.map((item, index) => {
+          const isActive =
+            location.pathname === item.location ||
+            location.pathname === item.href;
 
           return (
             item.condition && (
               <Link
-                key={item.name}
+                key={index}
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
                   isActive
                     ? "bg-black text-white"
-                    : "text-gray-700 hover:bg-gray-100",
+                    : "text-gray-700 hover:bg-gray-200",
                   isCollapsed && "justify-center"
                 )}
                 title={isCollapsed ? item.name : undefined}

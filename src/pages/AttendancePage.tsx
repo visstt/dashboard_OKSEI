@@ -5,8 +5,6 @@ import {
   Bar,
   LineChart,
   Line,
-  PieChart,
-  Pie,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -30,22 +28,15 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Users, Calendar, AlertTriangle } from "lucide-react";
+import { Users, Calendar } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
 import type {
   AttendanceRecord,
   Department,
   FlatStudent,
 } from "@/types/attendance";
-
-const COLORS = [
-  "#BEBEBE",
-  "#EA5596",
-  "#4FB4E5",
-  "#EC6E2C",
-  "#666666",
-  "#808080",
-];
+import { PieDiagram } from "@/components/ui/pieDiagram";
+import { StatCard } from "@/widgets/statCard";
 
 export function AttendancePage() {
   const navigate = useNavigate();
@@ -168,52 +159,19 @@ export function AttendancePage() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-black">
-                Всего студентов
-              </CardTitle>
-              <Users className="h-4 w-4 text-black" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                {stats.totalStudents}
-              </div>
-              <p className="text-xs text-gray-600 mt-1">с пропусками</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            value={1202}
+            title="Всего студентов присутствует"
+            label={{ one: "человек", few: "человека", many: "человек" }}
+            icon={Users}
+          />
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-gray-700">
-                Всего пропусков
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-gray-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                {stats.totalMissed}
-              </div>
-              <p className="text-xs text-gray-600 mt-1">часов</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium text-black">
-                Критические случаи
-              </CardTitle>
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-black">
-                {stats.allStudents.filter((s) => s.totalMissed > 20).length}
-              </div>
-              <p className="text-xs text-gray-600 mt-1">
-                &gt;20 часов пропусков
-              </p>
-            </CardContent>
-          </Card>
+          <StatCard
+            value={377}
+            title="Всего студентов отсутсвует"
+            label={{ one: "человек", few: "человека", many: "человек" }}
+            icon={Calendar}
+          />
         </div>
       </div>
 
@@ -228,7 +186,7 @@ export function AttendancePage() {
           </p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Динамика пропусков по датам</CardTitle>
               <CardDescription>
@@ -296,7 +254,7 @@ export function AttendancePage() {
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card className="lg:col-span-2">
             <CardHeader>
@@ -306,56 +264,37 @@ export function AttendancePage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={stats.deptData.map((item, index) => ({
-                        ...item,
-                        fill: COLORS[index % COLORS.length],
-                      }))}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ percent = 0 }) =>
-                        `${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={100}
-                      dataKey="missed"
-                    />
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex flex-col justify-center space-y-3">
-                  {stats.deptData.map((dept, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div
-                        className="w-4 h-4 rounded"
-                        style={{
-                          backgroundColor: COLORS[index % COLORS.length],
-                        }}
-                      />
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-black">
-                          {dept.department}
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          {dept.missed} часов
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PieDiagram
+                data={[
+                  {
+                    name: "По уважительной причине",
+                    color: "#54EB66",
+                    value: 132,
+                  },
+                  {
+                    name: "По неуважительной причине",
+                    color: "#EA5596",
+                    value: 245,
+                  },
+                  {
+                    name: "Присутствуют",
+                    color: "#4FB4E5",
+                    value: 825,
+                  },
+                ]}
+                valueLabel={{
+                  one: "человек",
+                  few: "человека",
+                  many: "человек",
+                }}
+              />
             </CardContent>
           </Card>
         </div>
       </div>
 
-      <Separator />
-
       {/* Таблица топ-10 */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-black">Рейтинги</h2>
           <p className="text-sm text-muted-foreground">
@@ -419,12 +358,10 @@ export function AttendancePage() {
             </Table>
           </CardContent>
         </Card>
-      </div>
-
-      <Separator />
+      </div> */}
 
       {/* Полный список */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-black">Полный реестр</h2>
           <p className="text-sm text-muted-foreground">
@@ -460,7 +397,15 @@ export function AttendancePage() {
                           {student.name}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{student.group}</Badge>
+                          <Badge
+                            variant="secondary"
+                            className="hover:bg-gray-200 cursor-pointer hover:border-gray-300!"
+                            onClick={() => {
+                              navigate(`/group/${student.group}`);
+                            }}
+                          >
+                            {student.group}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-gray-700">
                           {student.department.length > 40
@@ -470,12 +415,13 @@ export function AttendancePage() {
                         <TableCell className="text-right">
                           <Badge
                             variant="outline"
+                            style={{ height: 21, cursor: "default" }}
                             className={
                               student.totalMissed > 20
-                                ? "bg-red-600 text-white"
+                                ? "bg-red-600 text-white border-none"
                                 : student.totalMissed > 10
-                                  ? "bg-orange-600 text-white"
-                                  : "bg-green-500 text-white"
+                                  ? "bg-orange-600 text-white border-none"
+                                  : "bg-green-500 text-white border-none"
                             }
                           >
                             {student.totalMissed} ч.
@@ -488,7 +434,7 @@ export function AttendancePage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 }

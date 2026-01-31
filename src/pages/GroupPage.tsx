@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Calendar } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
 import type { AttendanceRecord, Department } from "@/types/attendance";
+import { StatCard } from "@/widgets/statCard";
 
 export function GroupPage() {
   const { groupName } = useParams();
@@ -138,33 +139,18 @@ export function GroupPage() {
 
       {/* Статистика группы */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Студентов с пропусками
-            </CardTitle>
-            <Users className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black">
-              {groupData.totalStudents}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-black">
-              Всего пропущено
-            </CardTitle>
-            <Calendar className="h-4 w-4 text-black" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-black">
-              {groupData.totalMissed} ч
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Студентов с пропусками"
+          value={groupData.totalStudents}
+          label={{ one: "человек", few: "человека", many: "человек" }}
+          icon={Users}
+        />
+        <StatCard
+          title="Всего пропущено"
+          value={groupData.totalMissed}
+          label={{ one: "час", few: "часа", many: "часов" }}
+          icon={Calendar}
+        />
       </div>
 
       {/* Таблица студентов */}
@@ -197,14 +183,15 @@ export function GroupPage() {
                     <TableCell className="text-black">{student.name}</TableCell>
                     <TableCell className="text-right">
                       <Badge
+                        variant="outline"
+                        style={{ height: 21, cursor: "default" }}
                         className={
                           student.totalMissed > 20
-                            ? "bg-red-600 text-white"
+                            ? "bg-red-600 text-white border-none"
                             : student.totalMissed > 10
-                              ? "bg-orange-600 text-white"
-                              : "bg-green-500 text-white"
+                              ? "bg-orange-600 text-white border-none"
+                              : "bg-green-500 text-white border-none"
                         }
-                        variant="outline"
                       >
                         {student.totalMissed} ч
                       </Badge>
