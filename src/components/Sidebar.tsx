@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LogOut,
   HistoryIcon,
+  GroupIcon,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -18,13 +19,19 @@ export function Sidebar() {
       name: "Посещаемость",
       href: "/",
       icon: ClipboardList,
+      condition: true,
+    },
+    {
+      name: "Список групп",
+      href: "/groups",
+      icon: GroupIcon,
       condition: !location.pathname.includes("/group/"),
     },
     {
-      name: `Посещаемость (${decodeURIComponent(location.pathname.replace("/group/", ""))})`,
-      href: "/",
+      name: `Список групп (${decodeURIComponent(location.pathname.replace("/group/", ""))})`,
+      href: "/groups",
       location: location.pathname,
-      icon: ClipboardList,
+      icon: GroupIcon,
       condition: location.pathname.includes("/group/"),
     },
     { name: "История", href: "/history", icon: HistoryIcon, condition: true },
@@ -34,7 +41,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex h-screen flex-col border-r bg-white transition-all duration-300",
+        "flex h-screen flex-col border-r bg-white",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

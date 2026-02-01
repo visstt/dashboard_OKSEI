@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Calendar } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
 import type { AttendanceRecord, Department } from "@/types/attendance";
-import { StatCard } from "@/widgets/statCard";
+import { PieDiagram } from "@/components/ui/pieDiagram";
 
 export function GroupPage() {
   const { groupName } = useParams();
@@ -101,7 +101,7 @@ export function GroupPage() {
         <div className="text-center space-y-4">
           <p className="text-lg text-black">Группа не найдена</p>
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/groups")}
             variant="default"
             size="default"
           >
@@ -120,11 +120,11 @@ export function GroupPage() {
         <Button
           variant="outline"
           size="default"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/groups")}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Назад к общей статистике
+          Назад к списку групп
         </Button>
 
         <div>
@@ -138,20 +138,34 @@ export function GroupPage() {
       </div>
 
       {/* Статистика группы */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <StatCard
-          title="Студентов с пропусками"
-          value={groupData.totalStudents}
-          label={{ one: "человек", few: "человека", many: "человек" }}
-          icon={Users}
-        />
-        <StatCard
-          title="Всего пропущено"
-          value={groupData.totalMissed}
-          label={{ one: "час", few: "часа", many: "часов" }}
-          icon={Calendar}
-        />
-      </div>
+      <Card className="lg:col-span-2">
+        <CardContent>
+          <PieDiagram
+            data={[
+              {
+                name: "По уважительной причине",
+                color: "#54EB66",
+                value: 132,
+              },
+              {
+                name: "По неуважительной причине",
+                color: "#EA5596",
+                value: 245,
+              },
+              {
+                name: "Присутствуют",
+                color: "#4FB4E5",
+                value: 825,
+              },
+            ]}
+            valueLabel={{
+              one: "час",
+              few: "часа",
+              many: "часов",
+            }}
+          />
+        </CardContent>
+      </Card>
 
       {/* Таблица студентов */}
       <Card>
@@ -175,10 +189,10 @@ export function GroupPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {groupData.students.map((student, idx) => (
-                  <TableRow key={idx}>
+                {groupData.students.map((student, index) => (
+                  <TableRow key={index}>
                     <TableCell className="font-medium text-black">
-                      {idx + 1}
+                      {index + 1}
                     </TableCell>
                     <TableCell className="text-black">{student.name}</TableCell>
                     <TableCell className="text-right">

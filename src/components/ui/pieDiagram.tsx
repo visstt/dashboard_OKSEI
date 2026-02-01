@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import { useEffect, useState, type HTMLAttributes } from "react";
 import { pluralizeRu, type PluralizeRuFormats } from "@/lib/pluralizeRu";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
@@ -18,6 +18,14 @@ export const PieDiagram = ({
   valueLabel,
   className,
 }: PieDiagramProps) => {
+  const [animation, setAnimation] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setAnimation(false), 2200);
+
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 ${className}`}>
       <ResponsiveContainer width="100%" height={300}>
@@ -38,6 +46,8 @@ export const PieDiagram = ({
                   : `${Math.round(percent * 100)}%`
             }
             outerRadius={100}
+            animationDuration={1200}
+            isAnimationActive={animation}
           />
           <Tooltip />
         </PieChart>

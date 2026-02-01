@@ -6,6 +6,8 @@ import Layout from "@/components/Layout";
 import { useAuthStore } from "./store/auth.store";
 import { useEffect } from "react";
 import { NotFound } from "./pages/NotFound";
+import AllGroupsPage from "./pages/AllGroupsPage";
+import { HistoryPage } from "./pages/HistoryPage";
 
 function Logout() {
   const logout = useAuthStore((state) => state.logout);
@@ -28,7 +30,9 @@ export function AppRouter() {
           <Route path="/logout" element={<Logout />} />
           <Route element={<Layout />}>
             <Route index element={<AttendancePage />} />
-            <Route path="group/:groupName" element={<GroupPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/groups" element={<AllGroupsPage />} />
+            <Route path="/group/:groupName" element={<GroupPage />} />
           </Route>
         </>
       )}

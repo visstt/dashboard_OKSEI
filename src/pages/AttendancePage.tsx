@@ -1,32 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, Calendar } from "lucide-react";
 import loadAttendance from "@/lib/xlsxAttendanceConverter";
@@ -158,7 +138,7 @@ export function AttendancePage() {
             Основные показатели посещаемости
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StatCard
             value={1202}
             title="Всего студентов присутствует"
@@ -256,13 +236,14 @@ export function AttendancePage() {
             </CardContent>
           </Card> */}
 
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2" onClick={() => navigate("/groups")}>
             <CardHeader>
-              <CardTitle>Распределение пропусков по отделениям</CardTitle>
+              <CardTitle>Посещаемость студентов</CardTitle>
               <CardDescription>
-                Общее количество пропусков по отделениям
+                Данные о присутствии и пропусках студентов
               </CardDescription>
             </CardHeader>
+
             <CardContent>
               <PieDiagram
                 data={[
@@ -283,9 +264,9 @@ export function AttendancePage() {
                   },
                 ]}
                 valueLabel={{
-                  one: "человек",
-                  few: "человека",
-                  many: "человек",
+                  one: "час",
+                  few: "часа",
+                  many: "часов",
                 }}
               />
             </CardContent>

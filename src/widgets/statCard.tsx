@@ -21,9 +21,10 @@ export const StatCard = ({
   label,
   icon: Icon,
   className,
+  ...props
 }: StatCardProps) => {
   return (
-    <Card className={className}>
+    <Card className={className} {...props}>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium text-black">
           {title}

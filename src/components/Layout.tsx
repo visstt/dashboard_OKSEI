@@ -6,13 +6,13 @@ export default function Layout() {
     <div className="flex h-screen bg-white">
       <Sidebar />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex flex-col flex-1 overflow-y-auto">
         <div className="border-b px-8 py-6 space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">
             Мониторинг посещаемости
           </h1>
           <p className="text-sm text-muted-foreground">
-            Пропуски по неуважительной причине
+            Статистика о пропусках занятий студентами
           </p>
         </div>
 
@@ -20,7 +20,7 @@ export default function Layout() {
           <Outlet />
         </div>
 
-        <div className="border-t px-8 py-6 text-center text-sm text-muted-foreground">
+        <div className="mt-auto border-t px-8 py-6 text-center text-sm text-muted-foreground">
           ГАПОУ ОКЭИ • {new Date().getFullYear()}
         </div>
       </main>
