@@ -1,18 +1,21 @@
-name: Build Vite React (bun)
+name: Frontend tests
 
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'frontend/**'      # Запускать только при изменениях во фронтенде
   pull_request:
     branches: [ "master" ]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    paths:
+      - 'frontend/**'
 
 jobs:
-  tests:
+  frontend-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Checkout repo
@@ -31,3 +34,9 @@ jobs:
 
       - name: Build project
         run: bun run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/dist/
