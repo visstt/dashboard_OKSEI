@@ -1,11 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "@/widgets/sidebar/Sidebar";
 
 export default function Layout() {
   return (
     <div className="flex h-screen bg-white">
-      <Sidebar />
-
       <main className="flex flex-col flex-1 overflow-y-auto">
         <div className="border-b px-8 py-6 space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">

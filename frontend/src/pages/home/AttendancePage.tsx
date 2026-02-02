@@ -131,31 +131,6 @@ export function AttendancePage() {
   return (
     <div className="space-y-8">
       {/* Статистические карточки */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-black">Общая статистика</h2>
-          <p className="text-sm text-muted-foreground">
-            Основные показатели посещаемости
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <StatCard
-            value={1202}
-            title="Всего студентов присутствует"
-            label={{ one: "человек", few: "человека", many: "человек" }}
-            icon={Users}
-          />
-
-          <StatCard
-            value={377}
-            title="Всего студентов отсутсвует"
-            label={{ one: "человек", few: "человека", many: "человек" }}
-            icon={Calendar}
-          />
-        </div>
-      </div>
-
-      <Separator />
 
       {/* Графики */}
       <div className="space-y-4">
@@ -274,6 +249,32 @@ export function AttendancePage() {
               />
             </CardContent>
           </CardWrapper>
+        </div>
+      </div>
+      
+      <Separator />
+
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-black">Общая статистика</h2>
+          <p className="text-sm text-muted-foreground">
+            Основные показатели посещаемости
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <StatCard
+            value={1202}
+            title="Всего студентов присутствует"
+            label={{ one: "человек", few: "человека", many: "человек" }}
+            icon={Users}
+          />
+
+          <StatCard
+            value={377}
+            title="Всего студентов отсутсвует"
+            label={{ one: "человек", few: "человека", many: "человек" }}
+            icon={Calendar}
+          />
         </div>
       </div>
 
