@@ -260,3 +260,158 @@ func (l *Loader) LoadStatement(jsonPath string) error {
 	log.Printf("[Database] Ведомость загружена. Отделений: %d", len(departments))
 	return nil
 }
+
+// LoadLessons загружает данные расписания и явки по занятиям из JSON в БД
+func (l *Loader) LoadLessons(jsonPath string) error {
+	if l.db == nil {
+		return fmt.Errorf("БД не подключена")
+	}
+
+	log.Printf("[Database] Загрузка расписания занятий из %s...", jsonPath)
+
+	data, err := os.ReadFile(jsonPath)
+	if err != nil {
+		return fmt.Errorf("ошибка чтения файла: %v", err)
+	}
+
+	// Структура соответствует LessonsOutput из converter/lessons.go
+	var lessonsData struct {
+		Period        string `json:"period"`
+		Groups        []struct {
+			Group         string `json:"group"`
+			Department    string `json:"department"`
+			TotalStudents int    `json:"totalStudents"`
+			Students      []struct {
+				StudentName   string `json:"studentName"`
+				NumberInGroup int    `json:"numberInGroup"`
+				Records       []struct {
+					Date       string `json:"date"`
+					Discipline string `json:"discipline"`
+					Teacher    string `json:"teacher"`
+					Attendance bool   `json:"attendance"`
+				} `json:"records"`
+			} `json:"students"`
+		} `json:"groups"`
+		TotalGroups   int `json:"totalGroups"`
+		TotalStudents int `json:"totalStudents"`
+	}
+
+	if err := json.Unmarshal(data, &lessonsData); err != nil {
+		return fmt.Errorf("ошибка парсинга JSON lessons: %v", err)
+	}
+
+	tx, err := l.db.Begin()
+	if err != nil {
+		return fmt.Errorf("ошибка начала транзакции: %v", err)
+	}
+	defer tx.Rollback()
+
+	for _, g := range lessonsData.Groups {
+		if g.Group == "" {
+			continue
+		}
+
+		// Отделение
+		deptName := g.Department
+		if deptName == "" {
+			deptName = "Неизвестное отделение"
+		}
+
+		var deptID int
+		if err := tx.QueryRow(
+			`INSERT INTO departments (name) VALUES ($1)
+			 ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+			 RETURNING id`,
+			deptName,
+		).Scan(&deptID); err != nil {
+			return fmt.Errorf("ошибка вставки отделения %s: %v", deptName, err)
+		}
+
+		// Группа
+		var groupID int
+		if err := tx.QueryRow(
+			`INSERT INTO groups (department_id, name) VALUES ($1, $2)
+			 ON CONFLICT (department_id, name) DO UPDATE SET name = EXCLUDED.name
+			 RETURNING id`,
+			deptID, g.Group,
+		).Scan(&groupID); err != nil {
+			return fmt.Errorf("ошибка вставки группы %s: %v", g.Group, err)
+		}
+
+		for _, s := range g.Students {
+			if s.StudentName == "" {
+				continue
+			}
+
+			// Студент
+			var studentID int
+			if err := tx.QueryRow(
+				`INSERT INTO students (group_id, full_name) VALUES ($1, $2)
+				 ON CONFLICT (group_id, full_name) DO UPDATE SET full_name = EXCLUDED.full_name
+				 RETURNING id`,
+				groupID, s.StudentName,
+			).Scan(&studentID); err != nil {
+				return fmt.Errorf("ошибка вставки студента %s: %v", s.StudentName, err)
+			}
+
+			// Занятия
+			for _, r := range s.Records {
+				if r.Date == "" || r.Discipline == "" {
+					continue
+				}
+
+				// Дата/время — берём как есть, формат у нас строковый (из 1С)
+				// Попробуем распарсить в TIMESTAMP
+				var dt time.Time
+				var parseErr error
+				formats := []string{
+					"02.01.2006 15:04:05",
+					"02.01.2006 0:00:00",
+					"02.01.2006",
+					time.RFC3339,
+				}
+				for _, f := range formats {
+					dt, parseErr = time.ParseInLocation(f, r.Date, time.Local)
+					if parseErr == nil {
+						break
+					}
+				}
+				if parseErr != nil {
+					log.Printf("[Database] Предупреждение: не удалось распарсить дату занятия %q: %v", r.Date, parseErr)
+					continue
+				}
+
+				// Вставляем/находим lesson
+				var lessonID int
+				if err := tx.QueryRow(
+					`INSERT INTO lessons (group_id, date_time, discipline, teacher)
+					 VALUES ($1, $2, $3, $4)
+					 ON CONFLICT (group_id, date_time, discipline)
+					 DO UPDATE SET teacher = EXCLUDED.teacher
+					 RETURNING id`,
+					groupID, dt, r.Discipline, r.Teacher,
+				).Scan(&lessonID); err != nil {
+					return fmt.Errorf("ошибка вставки занятия (%s, %s): %v", r.Date, r.Discipline, err)
+				}
+
+				// Вставляем запись посещаемости по занятию
+				if _, err := tx.Exec(
+					`INSERT INTO lesson_attendance (lesson_id, student_id, attendance)
+					 VALUES ($1, $2, $3)
+					 ON CONFLICT (lesson_id, student_id)
+					 DO UPDATE SET attendance = EXCLUDED.attendance`,
+					lessonID, studentID, r.Attendance,
+				); err != nil {
+					return fmt.Errorf("ошибка вставки lesson_attendance: %v", err)
+				}
+			}
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("ошибка коммита транзакции (lessons): %v", err)
+	}
+
+	log.Printf("[Database] Расписание занятий загружено. Групп: %d", len(lessonsData.Groups))
+	return nil
+}

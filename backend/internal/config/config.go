@@ -20,7 +20,14 @@ type Config struct {
 	AttendanceOutput string
 	StatementInput   string
 	StatementOutput  string
+	StudentsInput    string // Ведомостьколва.xlsx или Контингент студентов
+	StudentsOutput   string // public/students.json
+	LessonsInput     string // Проба.xlsx - расписание занятий
+	LessonsOutput    string // public/lessons.json
 	PythonScript     string
+
+	// Интеграция с 1С
+	OneCSourceDir string // Путь к директории, куда смонтирован \\1C01\proba
 
 	// Настройки сервера
 	ServerPort string
@@ -69,20 +76,20 @@ func Load() (*Config, error) {
 			// Проверяем наличие папок public/ и backend/ в текущей директории
 			publicExists := false
 			backendExists := false
-			
+
 			if _, err := os.Stat(filepath.Join(current, "public")); err == nil {
 				publicExists = true
 			}
 			if _, err := os.Stat(filepath.Join(current, "backend")); err == nil {
 				backendExists = true
 			}
-			
+
 			// Если есть обе папки - это корень проекта
 			if publicExists && backendExists {
 				projectRoot = current
 				break
 			}
-			
+
 			// Поднимаемся на уровень выше
 			parent := filepath.Dir(current)
 			if parent == current || parent == "/" {
@@ -91,7 +98,7 @@ func Load() (*Config, error) {
 			}
 			current = parent
 		}
-		
+
 		// Если не нашли, пробуем найти по наличию public/
 		if projectRoot == "" {
 			current := wd
@@ -107,7 +114,7 @@ func Load() (*Config, error) {
 				current = parent
 			}
 		}
-		
+
 		// Если всё ещё не нашли, используем текущую директорию
 		if projectRoot == "" {
 			projectRoot = wd
@@ -213,6 +220,14 @@ func Load() (*Config, error) {
 		loginRole = "admin"
 	}
 
+	// Путь к исходным файлам 1С (шаре \\1C01\proba)
+	oneCSourceDir := os.Getenv("ONEC_SOURCE_DIR")
+	if oneCSourceDir == "" {
+		// Значение по умолчанию — можно переопределить через переменную окружения
+		// На бою это должна быть смонтированная директория с 1С
+		oneCSourceDir = `\\1C01\proba`
+	}
+
 	cfg := &Config{
 		RefreshInterval:  refreshInterval,
 		ProjectRoot:      projectRoot,
@@ -220,7 +235,12 @@ func Load() (*Config, error) {
 		AttendanceOutput: filepath.Join(projectRoot, "public", "attendance.json"),
 		StatementInput:   filepath.Join(projectRoot, "ведомость.xls"),
 		StatementOutput:  filepath.Join(projectRoot, "public", "summary.json"),
+		StudentsInput:    filepath.Join(projectRoot, "backend", "internal", "converter", "Ведомостьколва.xlsx"),
+		StudentsOutput:   filepath.Join(projectRoot, "public", "students.json"),
+		LessonsInput:     filepath.Join(projectRoot, "backend", "internal", "converter", "Проба.xlsx"),
+		LessonsOutput:    filepath.Join(projectRoot, "public", "lessons.json"),
 		PythonScript:     filepath.Join(projectRoot, "statement-converter", "xls_to_xlsx.py"),
+		OneCSourceDir:    oneCSourceDir,
 		ServerPort:       serverPort,
 		ServerHost:       serverHost,
 		DatabaseURL:      databaseURL,

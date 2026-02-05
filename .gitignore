@@ -35,6 +35,7 @@ public/attendance.xlsx
 
 # Go binaries
 converter/converter
+backend/server
 *.exe
 *.exe~
 *.dll

@@ -15,18 +15,26 @@ type Scheduler struct {
 	attendanceOutput string
 	statementInput   string
 	statementOutput  string
+	studentsInput    string
+	studentsOutput   string
+	lessonsInput     string
+	lessonsOutput    string
 	pythonScript     string
 	// Кэш времени последнего изменения файлов для оптимизации
 	lastModified map[string]time.Time
 }
 
-func NewScheduler(projectRoot, attendanceInput, attendanceOutput, statementInput, statementOutput, pythonScript string) *Scheduler {
+func NewScheduler(projectRoot, attendanceInput, attendanceOutput, statementInput, statementOutput, studentsInput, studentsOutput, lessonsInput, lessonsOutput, pythonScript string) *Scheduler {
 	return &Scheduler{
 		projectRoot:      projectRoot,
 		attendanceInput:  attendanceInput,
 		attendanceOutput: attendanceOutput,
 		statementInput:   statementInput,
 		statementOutput:  statementOutput,
+		studentsInput:    studentsInput,
+		studentsOutput:   studentsOutput,
+		lessonsInput:     lessonsInput,
+		lessonsOutput:    lessonsOutput,
 		pythonScript:     pythonScript,
 		lastModified:     make(map[string]time.Time),
 	}
@@ -71,6 +79,55 @@ func (s *Scheduler) RefreshData() error {
 		log.Println("[Scheduler] Ведомость обновлена")
 	} else {
 		log.Println("[Scheduler] Ведомость не изменилась, пропускаем")
+	}
+
+	// Проверяем наличие файла контингента студентов и его изменения
+	log.Printf("[Scheduler] Проверка файла студентов: входной=%s, выходной=%s", s.studentsInput, s.studentsOutput)
+	if shouldUpdate, err := s.shouldUpdateFile(s.studentsInput, s.studentsOutput); err != nil {
+		log.Printf("[Scheduler] Предупреждение при проверке файла студентов: %v", err)
+		log.Printf("[Scheduler] Пробуем конвертировать принудительно...")
+		// Пробуем конвертировать даже если файл не найден (может быть в другом месте)
+		if err := converter.ConvertStudents(s.studentsInput, s.studentsOutput); err != nil {
+			log.Printf("[Scheduler] Ошибка конвертации контингента студентов: %v", err)
+			// Не возвращаем ошибку, чтобы не ломать остальные конвертеры
+		} else {
+			log.Println("[Scheduler] Контингент студентов успешно конвертирован")
+		}
+	} else if shouldUpdate {
+		// Конвертируем контингент студентов
+		log.Println("[Scheduler] Конвертация контингента студентов...")
+		if err := converter.ConvertStudents(s.studentsInput, s.studentsOutput); err != nil {
+			log.Printf("[Scheduler] Ошибка конвертации контингента студентов: %v", err)
+			// Не возвращаем ошибку, чтобы не ломать остальные конвертеры
+		} else {
+			// Обновляем время последнего изменения
+			if info, err := os.Stat(s.studentsInput); err == nil {
+				s.lastModified[s.studentsInput] = info.ModTime()
+			}
+			log.Println("[Scheduler] Контингент студентов обновлён")
+		}
+	} else {
+		log.Printf("[Scheduler] Контингент студентов не изменился, пропускаем (входной: %s, выходной: %s)", s.studentsInput, s.studentsOutput)
+	}
+
+	// Проверяем наличие файла расписания занятий и его изменения
+	if shouldUpdate, err := s.shouldUpdateFile(s.lessonsInput, s.lessonsOutput); err != nil {
+		log.Printf("[Scheduler] Предупреждение при проверке файла расписания: %v", err)
+	} else if shouldUpdate {
+		// Конвертируем расписание занятий
+		log.Println("[Scheduler] Конвертация расписания занятий...")
+		if err := converter.ConvertLessons(s.lessonsInput, s.lessonsOutput); err != nil {
+			log.Printf("[Scheduler] Ошибка конвертации расписания занятий: %v", err)
+			// Не возвращаем ошибку, чтобы не ломать остальные конвертеры
+		} else {
+			// Обновляем время последнего изменения
+			if info, err := os.Stat(s.lessonsInput); err == nil {
+				s.lastModified[s.lessonsInput] = info.ModTime()
+			}
+			log.Println("[Scheduler] Расписание занятий обновлено")
+		}
+	} else {
+		log.Printf("[Scheduler] Расписание занятий не изменилось, пропускаем")
 	}
 
 	log.Println("[Scheduler] Обновление данных завершено успешно!")

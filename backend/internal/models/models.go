@@ -38,6 +38,27 @@ type Attendance struct {
 	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 }
 
+// Lesson модель отдельного занятия (пара)
+type Lesson struct {
+	ID        int       `json:"id" db:"id"`
+	GroupID   int       `json:"group_id" db:"group_id"`
+	DateTime  time.Time `json:"date_time" db:"date_time"`
+	Discipline string   `json:"discipline" db:"discipline"`
+	Teacher   string    `json:"teacher" db:"teacher"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
+
+// LessonAttendance модель посещаемости конкретного занятия
+type LessonAttendance struct {
+	ID         int       `json:"id" db:"id"`
+	LessonID   int       `json:"lesson_id" db:"lesson_id"`
+	StudentID  int       `json:"student_id" db:"student_id"`
+	Attendance bool      `json:"attendance" db:"attendance"`
+	CreatedAt  time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
+}
+
 // Specialty модель специальности (для summary)
 type Specialty struct {
 	ID           int       `json:"id" db:"id"`
@@ -94,4 +115,28 @@ type GroupJSON struct {
 type DepartmentJSON struct {
 	Department string      `json:"department"`
 	Groups     []GroupJSON `json:"groups"`
+}
+
+// Schedule модель расписания (связь пар с группами по дням недели)
+type Schedule struct {
+	ID          int       `json:"id" db:"id"`
+	GroupID     int       `json:"group_id" db:"group_id"`
+	DayOfWeek   int       `json:"day_of_week" db:"day_of_week"`   // 0 = воскресенье, 1 = понедельник, ..., 6 = суббота
+	LessonNumber int      `json:"lesson_number" db:"lesson_number"` // Номер пары (1-8)
+	Discipline  string    `json:"discipline" db:"discipline"`
+	Teacher     string    `json:"teacher" db:"teacher"`
+	StartTime   string    `json:"start_time" db:"start_time"`   // Время начала (HH:MM:SS)
+	EndTime     string    `json:"end_time" db:"end_time"`       // Время окончания (HH:MM:SS)
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+}
+
+// Threshold модель порогов цветовой индикации
+type Threshold struct {
+	ID             int       `json:"id" db:"id"`
+	Type           string    `json:"type" db:"type"`             // 'lesson', 'group', 'department'
+	GreenThreshold float64   `json:"green_threshold" db:"green_threshold"`  // Верхний порог (>=)
+	YellowThreshold float64  `json:"yellow_threshold" db:"yellow_threshold"` // Нижний порог (>=)
+	CreatedAt      time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at" db:"updated_at"`
 }
