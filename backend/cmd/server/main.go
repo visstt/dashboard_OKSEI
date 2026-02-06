@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 	"dashboard/internal/middleware"
 	"dashboard/internal/scheduler"
 	"dashboard/internal/services"
+	"dashboard/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
@@ -65,6 +67,9 @@ func main() {
 	// Инициализируем загрузчик БД
 	dbLoader := database.NewLoader(database.DB)
 
+	// Директория конвертеров (куда складываем Excel от 1С)
+	converterDir := filepath.Join(cfg.ProjectRoot, "backend", "internal", "converter")
+
 	// Инициализируем планировщик
 	sched := scheduler.NewScheduler(
 		cfg.ProjectRoot,
@@ -72,16 +77,26 @@ func main() {
 		cfg.AttendanceOutput,
 		cfg.StatementInput,
 		cfg.StatementOutput,
+		cfg.StudentsInput,
+		cfg.StudentsOutput,
+		cfg.LessonsInput,
+		cfg.LessonsOutput,
 		cfg.PythonScript,
 	)
 
 	// Инициализируем сервисы
 	attendanceService := services.NewAttendanceService(cfg.AttendanceOutput)
+	lessonsService := services.NewLessonsService(database.DB)
+	dashboardMainService := services.NewDashboardService(database.DB)
+	thresholdsService := services.NewThresholdsService(database.DB)
 
 	// Инициализируем handlers
 	ginHandler := api.NewGinHandler(sched, dbLoader)
 	authHandler := api.NewAuthHandler(cfg)
 	dashboardHandler := api.NewDashboardHandler(attendanceService, cfg.AbsenceThreshold)
+	lessonsHandler := api.NewLessonsHandler(lessonsService)
+	dashboardMainHandler := api.NewDashboardMainHandler(dashboardMainService)
+	thresholdsHandler := api.NewThresholdsHandler(thresholdsService)
 
 	// Настраиваем Gin router (используем gin.New() вместо gin.Default() чтобы избежать дублирования middleware)
 	router := gin.New()
@@ -116,6 +131,17 @@ func main() {
 			protected.GET("/attendance/drill/groups", dashboardHandler.DrillGroups)
 			protected.GET("/attendance/drill/students", dashboardHandler.DrillStudents)
 
+			// Эндпоинты по расписанию
+			protected.GET("/lessons/day", lessonsHandler.Day)
+
+			// Эндпоинты главного экрана (Real-time Dashboard)
+			protected.GET("/dashboard/stats", dashboardMainHandler.Stats)
+			protected.GET("/dashboard/lessons/today", dashboardMainHandler.TodayLessons)
+			protected.GET("/dashboard/current-lesson", dashboardMainHandler.CurrentLesson)
+
+			// Эндпоинты настроек (пороги)
+			protected.GET("/settings/thresholds", thresholdsHandler.GetThresholds)
+
 			// Админские эндпоинты (только для admin)
 			adminGroup := protected.Group("/admin")
 			adminGroup.Use(middleware.RequireRole("admin"))
@@ -123,6 +149,13 @@ func main() {
 				adminGroup.POST("/refresh-data", ginHandler.RefreshData)
 				adminGroup.GET("/refresh-status", ginHandler.GetRefreshStatus)
 				adminGroup.GET("/refresh-history", ginHandler.GetRefreshHistory)
+			}
+
+			// Эндпоинты настроек (только для admin)
+			settingsGroup := protected.Group("/settings")
+			settingsGroup.Use(middleware.RequireRole("admin"))
+			{
+				settingsGroup.PUT("/thresholds", thresholdsHandler.UpdateThresholds)
 			}
 		}
 	}
@@ -152,6 +185,9 @@ func main() {
 	cronExpr := formatCronInterval(cfg.RefreshInterval)
 	_, err = c.AddFunc(cronExpr, func() {
 		log.Println("[Server] Запуск автоматического обновления данных...")
+		// Синхронизируем файлы из 1С перед обновлением
+		utils.SyncFromOneC(cfg.OneCSourceDir, converterDir)
+
 		if err := sched.RefreshData(); err != nil {
 			log.Printf("[Server] Ошибка обновления данных: %v", err)
 		}
@@ -163,6 +199,9 @@ func main() {
 			if err := dbLoader.LoadStatement(cfg.StatementOutput); err != nil {
 				log.Printf("[Server] Предупреждение при загрузке ведомости в БД: %v", err)
 			}
+			if err := dbLoader.LoadLessons(cfg.LessonsOutput); err != nil {
+				log.Printf("[Server] Предупреждение при загрузке расписания в БД: %v", err)
+			}
 		}
 	})
 	if err != nil {
@@ -171,6 +210,9 @@ func main() {
 
 	// Запускаем обновление сразу при старте
 	log.Println("[Server] Первоначальное обновление данных...")
+	// Синхронизируем файлы из 1С перед первым обновлением
+	utils.SyncFromOneC(cfg.OneCSourceDir, converterDir)
+
 	if err := sched.RefreshData(); err != nil {
 		log.Printf("[Server] Предупреждение при первоначальном обновлении: %v", err)
 	}
@@ -182,6 +224,9 @@ func main() {
 		}
 		if err := dbLoader.LoadStatement(cfg.StatementOutput); err != nil {
 			log.Printf("[Server] Предупреждение при загрузке ведомости в БД: %v", err)
+		}
+		if err := dbLoader.LoadLessons(cfg.LessonsOutput); err != nil {
+			log.Printf("[Server] Предупреждение при загрузке расписания в БД: %v", err)
 		}
 	}
 
