@@ -1,5 +1,5 @@
-# Система мониторинга посещаемости ГАПОУ ОКЭИ
-### (моно репозиторий)
----
-- [Backend](backend)
-- [Frontend](frontend)
+Структура проекта
+
+Зависимости
+- `github.com/xuri/excelize/v2` - работа с Excel файлами
+- `github.com/robfig/cron/v3` - планировщик задач
