@@ -30,9 +30,6 @@ bun.lockb
 *.sln
 *.sw?
 
-# Private files
-public/attendance.xlsx
-
 # Go binaries
 converter/converter
 backend/server
